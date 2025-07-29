@@ -1,7 +1,7 @@
 import argparse
 
 def get_args():
-    parser = argparse.ArgumentParser(description='HyperKGL模型参数')
+    parser = argparse.ArgumentParser(description='HyperSMP模型参数')
     
     # 训练相关参数
     parser.add_argument('--batch_size', type=int, default=32, help='批次大小')

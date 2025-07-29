@@ -2,15 +2,15 @@ import torch
 import torch.nn as nn
 import logging
 from .layers import (
-    SemalinkAttentiveAggregator,
+    FinegrainedAggregator,
     InnerPropagation,
     OuterPropagation
 )
 from .random_walk import HypergraphRandomWalk
 
-class HyperKGL(nn.Module):
+class HyperSMP(nn.Module):
     def __init__(self, args, n_nodes, n_hyperedges, n_semantics, hypergraph, device):
-        super(HyperKGL, self).__init__()
+        super(HyperSMP, self).__init__()
         self.device = device
 
         self.embed_dim = args.embed_dim
@@ -34,7 +34,7 @@ class HyperKGL(nn.Module):
         self.edge2node_propagators = nn.ModuleList()
 
         for _ in range(self.n_layers):
-            self.smalink_aggregators.append(SemalinkAttentiveAggregator(self.embed_dim, self.embed_dim))
+            self.smalink_aggregators.append(FinegrainedAggregator(self.embed_dim, self.embed_dim))
             self.hyperedge_propagators.append(InnerPropagation(self.embed_dim, self.embed_dim))
             self.edge2node_propagators.append(OuterPropagation(self.embed_dim, self.embed_dim, self.embed_dim))
 
@@ -63,7 +63,7 @@ class HyperKGL(nn.Module):
                                                                self.hyperedge_embeddings.weight, filtered_semalinks,filtered_semalinks[:,1].unique())
             self.hyperedge_embeddings.weight[hyperedge_indx] = co_hyperedge_embeddings
             print(
-                f"Layer {i + 1}/{self.n_layers} SemalinkAttentiveAggregator processed in {time.time() - step_start_time:.2f} seconds.")
+                f"Layer {i + 1}/{self.n_layers} FinegrainedAggregator processed in {time.time() - step_start_time:.2f} seconds.")
             step_start_time = time.time()
 
             
