@@ -4,9 +4,9 @@ import torch.nn.functional as F
 import logging
 import time
 
-class SemalinkAttentiveAggregator(nn.Module):
+class FinegrainedAggregator(nn.Module):
     def __init__(self, in_dim, out_dim, dropout, semalink_in_dim):
-        super(SemalinkAttentiveAggregator, self).__init__()
+        super(FinegrainedAggregator, self).__init__()
         self.linear = nn.Linear(in_dim, out_dim)
         nn.init.xavier_uniform_(self.linear.weight)
         self.W_r = nn.Parameter(torch.Tensor(in_dim, out_dim))
@@ -22,7 +22,7 @@ class SemalinkAttentiveAggregator(nn.Module):
         num_hyperedges = hyperedge_embeddings.size(0)
         semalink_embeddings_transformed = self.semalink_linear(semalink_embeddings)
         logging.info(
-            f"SemalinkAttentiveAggregator: semalink_embeddings_transformed computed in {time.time() - start_time:.2f} seconds.")
+            f"FinegrainedAggregator: semalink_embeddings_transformed computed in {time.time() - start_time:.2f} seconds.")
 
         aggregated_features = []
         for i in range(num_hyperedges):
@@ -48,7 +48,7 @@ class SemalinkAttentiveAggregator(nn.Module):
             else:
                 aggregated_features.append(torch.zeros_like(hyperedge_emb.squeeze(0)))  # 确保所有张量大小一致
             logging.info(
-                f"SemalinkAttentiveAggregator: hyperedge {i} processed in {time.time() - start_time:.2f} seconds.")
+                f"FinegrainedAggregator: hyperedge {i} processed in {time.time() - start_time:.2f} seconds.")
 
         aggregated_features = torch.stack(aggregated_features)
         aggregated_features = self.linear(aggregated_features)
@@ -61,14 +61,14 @@ class SemalinkAttentiveAggregator(nn.Module):
 
         aggregated_features = self.message_dropout(aggregated_features)
 
-        logging.info(f"SemalinkAttentiveAggregator: Aggregated features shape: {aggregated_features.shape}")
+        logging.info(f"FinegrainedAggregator: Aggregated features shape: {aggregated_features.shape}")
 
         return aggregated_features
 
 
 class InnerPropagation(nn.Module):
     def __init__(self, in_dim, out_dim):
-        super(HyperedgeBasedPropagation, self).__init__()
+        super(InnerPropagation, self).__init__()
         self.fc = nn.Linear(in_dim, out_dim)
         nn.init.xavier_uniform_(self.fc.weight)
         self.W_e = nn.Linear(in_dim, out_dim)
@@ -126,7 +126,7 @@ class InnerPropagation(nn.Module):
 
 class OuterPropagation(nn.Module):
     def __init__(self, in_dim, signal_dim, out_dim):
-        super(Edge2NodePropagation, self).__init__()
+        super(OuterPropagation, self).__init__()
         self.W_a = nn.Parameter(torch.randn(in_dim, signal_dim))
         self.W_f = nn.Parameter(torch.randn(in_dim * 2, out_dim))
 

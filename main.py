@@ -1,13 +1,13 @@
 import logging
 from config import get_args
 from data_loader import DataLoader
-from models.hyperkgl import HyperKGL
+from HyperSMP.models.hypersmp import HyperSMP
 from trainer import ModelTrainer
 
 def main():
     # 设置日志
     logging.basicConfig(
-        filename='hyperkgl.log',
+        filename='hyperSMP.log',
         level=logging.INFO,
         format='%(asctime)s - %(message)s'
     )
@@ -23,7 +23,7 @@ def main():
     # 初始化模型
     n_nodes = len(entity_embeddings)
     n_semantics = len(relation_embeddings)
-    model = HyperKGL(
+    model = HyperSMP(
         args=args,
         n_nodes=n_nodes,
         n_hyperedges=num_hyperedges,
